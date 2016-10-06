@@ -157,8 +157,8 @@ public class AddrScanTest {
 	}
 	
 	// Test permutations of results against well known live hosts
+	// Use @Ignore if no internet access
 	@Test
-	@Ignore
 	public void testAddrScanGoogle() {
 		// Valid scan test
 		ArrayList<Future<ResultValue>> testresults;

@@ -36,7 +36,7 @@ public class Probe implements Callable<ResultValue> {
 		this.port = validatePort(port);
 	}
 
-	// Initialize existing object
+	// Initialize existing object, return updated object
 	public Probe setTarget(InetAddress Target, int port) throws IllegalArgumentException, NullPointerException  {
 		Validate.notNull(Target, "InetAddress Target cannot be null");
 		this.Target = Target;
@@ -63,36 +63,36 @@ public class Probe implements Callable<ResultValue> {
 		}
 	}
 
-	// Runnable
+	// Engine of Probe functionality
+	// Creates socket, connects, then interprets exception to determine probe result
 	@Override
 	public ResultValue call() {
 		ResultValue ProbeResult = ResultValue.FILTERED;
 
+		// Creates connection attempt
 		try {
 			Socket socket = new Socket();
 			// fill in socket options
 			SocketAddress address = new InetSocketAddress(this.Target, this.port);
 			socket.connect(address, SOCKET_TIMEOUT_SEC * 1000);
-			// work with the sockets...
+			// work with the socket... 
 			ProbeResult = ResultValue.OPEN;
 			socket.close();
-		} catch (ConnectException e) {
+		} 
+		// Determine connection failure reason, set return value
+		catch (ConnectException e) {
 			if (e.getMessage().equals("Connection refused")) {
 				ProbeResult = ResultValue.CLOSED;
 			} else if (e.getMessage().equals("No route to host")) {
 				ProbeResult = ResultValue.ERROR;
 			} else {
-				//System.err.println(e);
 				ProbeResult = ResultValue.ERROR;
 			}
 		} catch (UnknownHostException e) {
-			// System.err.println(e);
 			ProbeResult = ResultValue.ERROR;
 		} catch (SocketTimeoutException e) {
-			// System.err.println(e);
 			ProbeResult = ResultValue.FILTERED;
 		} catch (IOException e) {
-			//System.err.println(e);
 			ProbeResult = ResultValue.ERROR;
 		}
 

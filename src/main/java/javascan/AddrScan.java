@@ -17,11 +17,15 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.Validate;
 
+// AddrScan is primary unit of work, representing a single target address (multiple 
+// ports).  Implements Scannable interface to allow a mix of single and multiple 
+// address objects in same results set.
+// Responsible for all multi-threading implementation.  Client of AddrScan must call
+// AddrScan.init() to initialize thread pool, and AddrScan.shutdown() to destroy
+// thread pool once scanning is complete.
 public class AddrScan implements Scannable {
 
 	// Constants
-	//private static final int MAXTHREADS = Integer.MAX_VALUE;
-	// adjust maximum threads down to avoid being scuttled on DO droplet
 	private static final int MAXTHREADS = 2048;
 	private static final long THREAD_IDLE_SEC = 5;
 
@@ -103,28 +107,32 @@ public class AddrScan implements Scannable {
 
 	}
 
-	// Scan target ports
+	// Scan target ports (Scannable interface)
+	@Override
 	public void scan() throws UnknownHostException {
 
 		for (int x = this.portLow; x <= this.portHigh; x++) {
 			try {
 				results.add(threadPoolExecutor.submit(new Probe(this.target, x)));
 			} catch (NullPointerException e) {
-				NullPointerException e2 = new NullPointerException(
+				NullPointerException f = new NullPointerException(
 						"AddrScan results ArrayList not initialized: invoke AddrScan.init() prior to scan()");
-				throw e2;
+				throw f;
 			} catch (RejectedExecutionException e) {
 				System.out.println(threadPoolExecutor.getPoolSize());
 				e.printStackTrace();
 			} catch (OutOfMemoryError e) {
-				//System.out.println(threadPoolExecutor.getPoolSize());
-				//e.printStackTrace();
+				// If thread pool unable to expand further, cap thread pool size and
+				// resubmit task so it becomes queued.  Subsequent submissions will
+				// be queued and run as threads become idle.  This error can be thrown
+				// due to max thread per process limit in OS (not just memory constraint)
 				threadPoolExecutor.setCorePoolSize(threadPoolExecutor.getPoolSize() - 1);
 				results.add(threadPoolExecutor.submit(new Probe()));
 			}
 		}
 	}
 
+	// Output results (Scannable interface)
 	@Override
 	public void output() throws InterruptedException, ExecutionException {
 

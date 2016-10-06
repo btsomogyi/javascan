@@ -14,6 +14,10 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 
+// Netscan is a wrapper around AddrScan providing the ability to scan contiguous subnets
+// in a single object.  Maintains order of AddrScan objects to generate output in order
+// of submission.  Implements Scannable to allow comingling of Addr and Net objects in
+// single ordered list of results.
 public class NetScan implements Scannable {
 
 	// Class Fields
@@ -35,6 +39,7 @@ public class NetScan implements Scannable {
 		this.porthigh = high;
 	}
 	
+	// Scan target ports (Scannable interface)
 	@Override
 	public void scan() throws UnknownHostException {
 		
@@ -51,6 +56,7 @@ public class NetScan implements Scannable {
 		}
 	}
 
+	// Output all results, in submitted order (Scannable interface)
 	@Override
 	public void output() throws InterruptedException, ExecutionException {
 		

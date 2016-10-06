@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.net.util.SubnetUtils;
 
+// Primary class for javascan project, containing main().  Parses command-line
+// parameters, then creates AddrScan and NetScan objects as appropriate with input
+// parameters.  Once all inputs are instantiated, executes scan() method across all
+// Scannable objects, which asynchronously execute against a single thread pool.  As
+// soon as Scannable objects are queued with thread pool, begins to output finished 
+// results, blocking on any results that are not yet completed until they are (providing
+// in-order output of results concurrently with ongoing scanning).
 public class Javascan {
 
 	// Used to separate host/ip/network from port range.
@@ -18,12 +25,9 @@ public class Javascan {
 	// Also need to escape for Java Regex
 	public static final String PORTDELIM = "@";
 
-	/**
-	 * Display usage and exit
-	 * 
-	 */
+
+	// Display usage and exit
 	private static void help() {
-		// This prints out some help
 		String cmd = Javascan.class.getSimpleName();
 		System.out.println("usage: " + cmd + " <<host | ip | cidr>[" + PORTDELIM + "port[-port]]>...");
 		System.out.println();
@@ -33,9 +37,7 @@ public class Javascan {
 		System.exit(0);
 	}
 
-	/**
-	 * @param args
-	 */
+	// Project main()
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			help();
@@ -117,20 +119,32 @@ public class Javascan {
 	}
 } // End class Javascan
 
+
+// Utility class for storing input parameters destined for AddrScan and NetScan objects.
+// Utilizes a single Object reference to store either AddrScan or NetScan (Scannable) objects
+// and provides convenience functions to return appropriate object type.
 class TargetSpec {
 	Object Target;
 	int portLow;
 	int portHigh;
 
+	// Constructor
 	public TargetSpec(String targetSpecs) throws IllegalArgumentException, UnknownHostException {
+		// Validate non null input
 		Validate.notNull(targetSpecs, "String targetSpecs cannot be null");
+		
+		// Parse input parameter using PORTDELIM as delimiter
 		String[] targetParts = targetSpecs.split(Javascan.PORTDELIM, 0);
+		
+		// If no ports specified, default to full range
 		if (targetParts.length == 1) {
 			this.portLow = 1;
 			this.portHigh = Probe.MAXPORT;
 		} else if (targetParts.length == 2) {
+			// Ports specified, parse and validate
 			String[] portParts = targetParts[1].split("-", 0);
 			if (portParts.length == 1) {
+				// If single port value provided, use for low and high (single port scan)
 				try {
 					this.portLow = Integer.parseInt(portParts[0]);
 					this.portHigh = portLow;
@@ -140,6 +154,7 @@ class TargetSpec {
 					throw f;
 				}
 			} else if (portParts.length == 2) {
+				// Range of ports provided
 				try {
 					this.portLow = Integer.parseInt(portParts[0]);
 					this.portHigh = Integer.parseInt(portParts[1]);
@@ -149,11 +164,13 @@ class TargetSpec {
 					throw f;
 				}
 			} else {
+				// Does not parse properly, throw exception
 				IllegalArgumentException e = new IllegalArgumentException(
 						"Invalid port specifier '" + targetParts[1] + "' in parameter " + targetSpecs);
 				throw e;
 			}
 		} else {
+			// Unable to parse this input parameter, throw exception
 			IllegalArgumentException e = new IllegalArgumentException("Invalid target specification: " + targetSpecs);
 			throw e;
 		}
@@ -175,6 +192,7 @@ class TargetSpec {
 		
 	} // End TargetSpec constructor
 
+	// Utility methods to return Target is desired Object type
 	public InetAddress getInetTarget() {
 		return (InetAddress) this.Target;
 	}
