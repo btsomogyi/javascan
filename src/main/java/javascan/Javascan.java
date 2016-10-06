@@ -13,7 +13,10 @@ import org.apache.commons.net.util.SubnetUtils;
  * @author Blue Thunder Somogyi
  *
  */
+
 public class Javascan {
+
+	public static final String PORTDELIM = "!";
 
 	/**
 	 * Display usage and exit
@@ -22,7 +25,7 @@ public class Javascan {
 	private static void help() {
 		// This prints out some help
 		String cmd = Javascan.class.getName();
-		System.out.println("usage: " + cmd + " <<host | ip | cidr>[:port[-port]]>...");
+		System.out.println("usage: " + cmd + " <<host | ip | cidr>[" + PORTDELIM + "port[-port]]>...");
 		System.out.println();
 		System.out.println("\t" + cmd + " hostname");
 		System.out.println("\t" + cmd + " a.b.c.d:10");
@@ -89,11 +92,16 @@ public class Javascan {
 				}
 			}
 
-			// Output results from Scannable ArrayList
-			System.out.println("target\t\t\tport\tresult");
-			for (Scannable s : Targets) {
+			// Output results from Scannable ArrayList (releasing object after
+			// output)
+			if (Targets.size() > 0) {
+				System.out.println("target\t\t\tport\tresult");
+			}
+			Scannable target = null;
+			while (!Targets.isEmpty()) {
+				target = Targets.remove(0);
 				try {
-					s.output();
+					target.output();
 				} catch (IllegalArgumentException e) {
 					System.out.println(e.getMessage());
 				}
@@ -116,7 +124,7 @@ class TargetSpec {
 
 	public TargetSpec(String targetSpecs) throws IllegalArgumentException, UnknownHostException {
 		Validate.notNull(targetSpecs, "String targetSpecs cannot be null");
-		String[] targetParts = targetSpecs.split(":", 0);
+		String[] targetParts = targetSpecs.split(Javascan.PORTDELIM, 0);
 		if (targetParts.length == 1) {
 			this.portLow = 1;
 			this.portHigh = Probe.MAXPORT;

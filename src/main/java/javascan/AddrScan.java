@@ -15,7 +15,8 @@ public class AddrScan implements Scannable {
 
 	// Constants
 	//private static final int MAXTHREADS = Integer.MAX_VALUE;
-	private static final int MAXTHREADS = 1024;
+	// adjust maximum threads down to avoid being scuttled on DO droplet
+	private static final int MAXTHREADS = 2048;
 	private static final long THREAD_IDLE_SEC = 5;
 
 	// Statics
@@ -98,7 +99,6 @@ public class AddrScan implements Scannable {
 
 	// Scan target ports
 	public void scan() throws UnknownHostException {
-		// TODO Auto-generated method stub
 
 		for (int x = this.portLow; x <= this.portHigh; x++) {
 			try {
