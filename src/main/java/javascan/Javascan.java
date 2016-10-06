@@ -19,7 +19,7 @@ public class Javascan {
 	// Used to separate host/ip/network from port range.
 	// Need to use character not used as shell metacharacter
 	// Also need to escape for Java Regex
-	public static final String PORTDELIM = "\\+";
+	public static final String PORTDELIM = "@";
 
 	/**
 	 * Display usage and exit
