@@ -1,3 +1,8 @@
+/**
+ * @author Blue Thunder Somogyi
+ *
+ * Copyright (c) 2016 Blue Thunder Somogyi
+ */
 package javascan;
 
 import java.io.IOException;
@@ -61,7 +66,6 @@ public class Probe implements Callable<ResultValue> {
 	// Runnable
 	@Override
 	public ResultValue call() {
-		// TODO Auto-generated method stub
 		ResultValue ProbeResult = ResultValue.FILTERED;
 
 		try {
@@ -73,8 +77,14 @@ public class Probe implements Callable<ResultValue> {
 			ProbeResult = ResultValue.OPEN;
 			socket.close();
 		} catch (ConnectException e) {
-			// System.err.println(e);
-			ProbeResult = ResultValue.CLOSED;
+			if (e.getMessage().equals("Connection refused")) {
+				ProbeResult = ResultValue.CLOSED;
+			} else if (e.getMessage().equals("No route to host")) {
+				ProbeResult = ResultValue.ERROR;
+			} else {
+				//System.err.println(e);
+				ProbeResult = ResultValue.ERROR;
+			}
 		} catch (UnknownHostException e) {
 			// System.err.println(e);
 			ProbeResult = ResultValue.ERROR;
@@ -82,16 +92,10 @@ public class Probe implements Callable<ResultValue> {
 			// System.err.println(e);
 			ProbeResult = ResultValue.FILTERED;
 		} catch (IOException e) {
-			// System.err.println(e);
-			ProbeResult = ResultValue.CLOSED;
+			//System.err.println(e);
+			ProbeResult = ResultValue.ERROR;
 		}
 
 		return ProbeResult;
 	}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
-}
+} // End class Probe

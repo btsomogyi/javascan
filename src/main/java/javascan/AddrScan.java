@@ -1,3 +1,9 @@
+/**
+ * @author Blue Thunder Somogyi
+ *
+ * Copyright (c) 2016 Blue Thunder Somogyi
+ */
+
 package javascan;
 
 import java.net.InetAddress;
@@ -121,7 +127,6 @@ public class AddrScan implements Scannable {
 
 	@Override
 	public void output() throws InterruptedException, ExecutionException {
-		// TODO Auto-generated method stub
 
 		int count = 0;
 		ResultValue result = null;

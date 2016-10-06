@@ -1,3 +1,8 @@
+/**
+ * @author Blue Thunder Somogyi
+ *
+ * Copyright (c) 2016 Blue Thunder Somogyi
+ */
 package javascan;
 
 import java.net.InetAddress;
@@ -32,7 +37,6 @@ public class NetScan implements Scannable {
 	
 	@Override
 	public void scan() throws UnknownHostException {
-		// TODO Auto-generated method stub
 		
 		for ( InetAddress target = InetAddress.getByName(targetInfo.getLowAddress()); 
 				targetInfo.isInRange(target.getHostAddress()); target = incrementIp(target)) {
@@ -49,8 +53,6 @@ public class NetScan implements Scannable {
 
 	@Override
 	public void output() throws InterruptedException, ExecutionException {
-		// TODO Auto-generated method stub
-		//for (AddrScan s: scans) s.output(); 
 		
 		AddrScan result = null;
 		while (!scans.isEmpty()) {
@@ -72,30 +74,9 @@ public class NetScan implements Scannable {
 		try {
 			result = InetAddress.getByAddress(addr);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String subnet = "192.168.10.0/28";
-		SubnetUtils targets = new SubnetUtils(subnet);
-		//SubnetInfo info = targets.getInfo();
-		NetScan scan;
-		
-		AddrScan.init();
-		//System.out.println(info.getLowAddress());
-		try {
-			scan = new NetScan(targets, 10, 15);
-			scan.scan();
-			scan.output();
-		} catch (UnknownHostException | InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		AddrScan.shutdown();
-	}
-
-}
+} // End NetScan class

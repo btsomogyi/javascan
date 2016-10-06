@@ -1,5 +1,7 @@
 /**
- * 
+ * @author Blue Thunder Somogyi
+ *
+ * Copyright (c) 2016 Blue Thunder Somogyi
  */
 package javascan;
 
@@ -8,11 +10,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.net.util.SubnetUtils;
-
-/**
- * @author Blue Thunder Somogyi
- *
- */
 
 public class Javascan {
 
@@ -27,7 +24,7 @@ public class Javascan {
 	 */
 	private static void help() {
 		// This prints out some help
-		String cmd = Javascan.class.getName();
+		String cmd = Javascan.class.getSimpleName();
 		System.out.println("usage: " + cmd + " <<host | ip | cidr>[" + PORTDELIM + "port[-port]]>...");
 		System.out.println();
 		System.out.println("\t" + cmd + " hostname");
@@ -172,7 +169,10 @@ class TargetSpec {
 		} catch (UnknownHostException e) {
 			UnknownHostException f = new UnknownHostException("Unresolvable target: " + targetParts[0]);
 			throw f;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
 	} // End TargetSpec constructor
 
 	public InetAddress getInetTarget() {
