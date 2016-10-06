@@ -16,7 +16,10 @@ import org.apache.commons.net.util.SubnetUtils;
 
 public class Javascan {
 
-	public static final String PORTDELIM = "!";
+	// Used to separate host/ip/network from port range.
+	// Need to use character not used as shell metacharacter
+	// Also need to escape for Java Regex
+	public static final String PORTDELIM = "\\+";
 
 	/**
 	 * Display usage and exit
@@ -28,8 +31,8 @@ public class Javascan {
 		System.out.println("usage: " + cmd + " <<host | ip | cidr>[" + PORTDELIM + "port[-port]]>...");
 		System.out.println();
 		System.out.println("\t" + cmd + " hostname");
-		System.out.println("\t" + cmd + " a.b.c.d:10");
-		System.out.println("\t" + cmd + " a.b.c.d/x:10-100");
+		System.out.println("\t" + cmd + " a.b.c.d" + PORTDELIM + "10");
+		System.out.println("\t" + cmd + " a.b.c.d/x" + PORTDELIM + "10-100");
 		System.exit(0);
 	}
 
