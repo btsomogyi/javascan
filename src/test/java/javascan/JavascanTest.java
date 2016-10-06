@@ -23,7 +23,7 @@ public class JavascanTest {
 	public void testTargetSpecValid() {
 		// Valid TargetSpec Constructor
 		try {
-			TargetSpec target = new TargetSpec("10.10.10.10:100-200");
+			TargetSpec target = new TargetSpec("10.10.10.10!100-200");
 			if (!target.getInetTarget().equals(InetAddress.getByName("10.10.10.10"))) {
 				fail("Target address not expected value: 10.10.10.10 actually: " + target.getInetTarget().getHostAddress());
 			} 
@@ -32,7 +32,7 @@ public class JavascanTest {
 						"] [portHigh: " + target.portHigh + "]");
 			}
 			
-			target = new TargetSpec("10.10.20.10:1000");
+			target = new TargetSpec("10.10.20.10!1000");
 			if (!target.getInetTarget().equals(InetAddress.getByName("10.10.20.10"))) {
 				fail("Target address not expected value: 10.10.20.10 actually: " + target.getInetTarget().getHostAddress());
 			} 
@@ -42,7 +42,7 @@ public class JavascanTest {
 			}
 			
 			target = null;
-			target = new TargetSpec("10.10.30.0/30:1-2000");
+			target = new TargetSpec("10.10.30.0/30!1-2000");
 			if (!target.getSubnetTarget().getInfo().getCidrSignature().equals(new SubnetUtils("10.10.30.0/30").getInfo().getCidrSignature())) {
 				fail("Target network not expected value: 10.10.30.0/30 actually: " + target.getSubnetTarget().getInfo().getCidrSignature());
 			} 
@@ -60,13 +60,13 @@ public class JavascanTest {
 		// Invalid TargetSpec Constructor
 		TargetSpec target;
 		try {
-			target = new TargetSpec("10.10.40.10:100:200");
+			target = new TargetSpec("10.10.40.10!100:200");
 			fail("IllegalArgumentException expected: [ports: 100:200]");
 		} catch (IllegalArgumentException | UnknownHostException e) {
 		}
 		
 		try {
-			target = new TargetSpec("10.10.abc.10:10000");
+			target = new TargetSpec("10.10.abc.10!10000");
 			fail("UnknownHostException expected: [host: 10.10.abc.10]");
 		} catch (IllegalArgumentException | UnknownHostException e) {
 		}
