@@ -1,9 +1,10 @@
+package javascan;
 /**
  * @author Blue Thunder Somogyi
  *
  * Copyright (c) 2016 Blue Thunder Somogyi
  */
-package javascan;
+
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

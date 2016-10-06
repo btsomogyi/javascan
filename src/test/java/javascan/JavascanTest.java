@@ -1,4 +1,11 @@
+/**
+ * @author Blue Thunder Somogyi
+ *
+ * Copyright (c) 2016 Blue Thunder Somogyi
+ */
+
 package javascan;
+
 
 import static org.junit.Assert.*;
 import java.net.InetAddress;
@@ -7,6 +14,7 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 
 @SuppressWarnings("unused")
 public class JavascanTest {

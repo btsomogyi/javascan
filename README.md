@@ -13,7 +13,7 @@ If Java 8 and Maven are already installed, use 'git clone' to clone from Github,
 $ git clone https://github.com/btsomogyi/javascan.git
 $ cd javascan
 $ mvn package
-$ java -cp target/javascan-<ver>-aio.jar javascan.Javascan
+$ java -jar target/javascan-<ver>-aio.jar 
 ```
 
 ### Usage

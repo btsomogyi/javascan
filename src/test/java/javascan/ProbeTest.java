@@ -1,3 +1,9 @@
+/**
+ * @author Blue Thunder Somogyi
+ *
+ * Copyright (c) 2016 Blue Thunder Somogyi
+ */
+
 package javascan;
 
 import static org.junit.Assert.*;
