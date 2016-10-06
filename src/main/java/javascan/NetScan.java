@@ -23,8 +23,8 @@ public class NetScan implements Scannable {
 	// Class Fields
 	private SubnetUtils targets;
 	private SubnetInfo targetInfo;
-	private int portlow;
-	private int porthigh;
+	private int portLow;
+	private int portHigh;
 	ArrayList<AddrScan> scans;
 
 	// Constructor
@@ -35,8 +35,21 @@ public class NetScan implements Scannable {
 		scans = new ArrayList<AddrScan>();
 
 		AddrScan.validatePorts(low, high);
-		this.portlow = low;
-		this.porthigh = high;
+		this.portLow = low;
+		this.portHigh = high;
+	}
+	
+	// Getters
+	public SubnetUtils getTargets() {
+		return this.targets;
+	}
+
+	public int getPortLow() {
+		return this.portLow;
+	}
+
+	public int getPortHigh() {
+		return this.portHigh;
 	}
 	
 	// Scan target ports (Scannable interface)
@@ -47,7 +60,7 @@ public class NetScan implements Scannable {
 				targetInfo.isInRange(target.getHostAddress()); target = incrementIp(target)) {
 			
 			//System.out.println(target.getHostAddress() + " " + portlow + " " + porthigh);
-			scans.add(new AddrScan(target, portlow, porthigh));
+			scans.add(new AddrScan(target, portLow, portHigh));
 		}
 		
 		for (AddrScan s: scans) {

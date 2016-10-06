@@ -99,9 +99,9 @@ public class AddrScanTest {
 			AddrScan test = new AddrScan(InetAddress.getByName("127.0.0.1"), 1, 65000);
 			if (!test.getTarget().equals(Target)) {
 				fail("test.Target not set correctly");
-			} else if (test.getPortlow() != 1) {
+			} else if (test.getPortLow() != 1) {
 				fail("test.Portlow incorrect");
-			} else if (test.getPorthigh() != 65000 ) {
+			} else if (test.getPortHigh() != 65000 ) {
 				fail("test.Porthigh incorrect");
 			} else if (test.results == null ) {
 				fail("test.results not initialized");

@@ -84,11 +84,11 @@ public class AddrScan implements Scannable {
 		return this.target;
 	}
 
-	public int getPortlow() {
+	public int getPortLow() {
 		return this.portLow;
 	}
 
-	public int getPorthigh() {
+	public int getPortHigh() {
 		return this.portHigh;
 	}
 

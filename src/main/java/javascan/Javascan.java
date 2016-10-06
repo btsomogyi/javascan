@@ -25,7 +25,6 @@ public class Javascan {
 	// Also need to escape for Java Regex
 	public static final String PORTDELIM = "@";
 
-
 	// Display usage and exit
 	private static void help() {
 		String cmd = Javascan.class.getSimpleName();
@@ -63,23 +62,15 @@ public class Javascan {
 					continue;
 				}
 
-				// For each TargetSpec, examine target type (InetAddress or
-				// SubnetUtils) and create
-				// appropriate Scannable instance in Targets ArrayList. Print
-				// Exception on target
-				// value validation error and continue with remaining input
-				// parameters.
+				// For each TargetSpec, call getScannable(). getScannable()
+				// examines target type (InetAddress or SubnetUtils) and creates
+				// appropriate Scannable instance to be added to Targets
+				// ArrayList. Print Exception on target value validation error
+				// and continue with remaining input parameters (without
+				// creating Targets entry.
 				try {
-					if (t.Target instanceof InetAddress) {
-						Targets.add(new AddrScan(t.getInetTarget(), t.portLow, t.portHigh));
-					} else if (t.Target instanceof SubnetUtils) {
-						Targets.add(new NetScan(t.getSubnetTarget(), t.portLow, t.portHigh));
-					} else {
-						IllegalArgumentException e = new IllegalArgumentException(
-								"Unexpected object type: " + t.Target.getClass().getSimpleName());
-						throw e;
-					}
-				} catch (IllegalArgumentException e) {
+					Targets.add(t.getScannable());
+				} catch (IllegalArgumentException | NullPointerException e) {
 					System.out.println(e.getMessage());
 					continue;
 				}
@@ -119,10 +110,10 @@ public class Javascan {
 	}
 } // End class Javascan
 
-
-// Utility class for storing input parameters destined for AddrScan and NetScan objects.
-// Utilizes a single Object reference to store either AddrScan or NetScan (Scannable) objects
-// and provides convenience functions to return appropriate object type.
+// Utility class for storing input parameters destined for AddrScan and NetScan
+// objects. Utilizes a single Object reference to store either AddrScan or
+// NetScan (Scannable) objects and provides convenience functions to return
+// appropriate object type.
 class TargetSpec {
 	Object Target;
 	int portLow;
@@ -132,10 +123,10 @@ class TargetSpec {
 	public TargetSpec(String targetSpecs) throws IllegalArgumentException, UnknownHostException {
 		// Validate non null input
 		Validate.notNull(targetSpecs, "String targetSpecs cannot be null");
-		
+
 		// Parse input parameter using PORTDELIM as delimiter
 		String[] targetParts = targetSpecs.split(Javascan.PORTDELIM, 0);
-		
+
 		// If no ports specified, default to full range
 		if (targetParts.length == 1) {
 			this.portLow = 1;
@@ -144,7 +135,8 @@ class TargetSpec {
 			// Ports specified, parse and validate
 			String[] portParts = targetParts[1].split("-", 0);
 			if (portParts.length == 1) {
-				// If single port value provided, use for low and high (single port scan)
+				// If single port value provided, use for low and high (single
+				// port scan)
 				try {
 					this.portLow = Integer.parseInt(portParts[0]);
 					this.portHigh = portLow;
@@ -189,8 +181,24 @@ class TargetSpec {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	} // End TargetSpec constructor
+
+	// Utility method to return Scannable object of type appropriate to
+	// TargetSpec Target type
+	public Scannable getScannable() throws IllegalArgumentException, NullPointerException {
+		Scannable target = null;
+
+		if (this.Target instanceof InetAddress) {
+			target = new AddrScan(this.getInetTarget(), this.portLow, this.portHigh);
+		} else if (this.Target instanceof SubnetUtils) {
+			target = new NetScan(this.getSubnetTarget(), this.portLow, this.portHigh);
+		} else {
+			IllegalArgumentException e = new IllegalArgumentException(
+					"Unexpected object type: " + this.Target.getClass().getSimpleName());
+			throw e;
+		}
+		return target;
+	}
 
 	// Utility methods to return Target is desired Object type
 	public InetAddress getInetTarget() {
