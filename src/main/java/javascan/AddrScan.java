@@ -110,11 +110,10 @@ public class AddrScan implements Scannable {
 				System.out.println(threadPoolExecutor.getPoolSize());
 				e.printStackTrace();
 			} catch (OutOfMemoryError e) {
-				System.out.println(threadPoolExecutor.getPoolSize());
-				e.printStackTrace();
-				threadPoolExecutor.setCorePoolSize(threadPoolExecutor.getPoolSize());
+				//System.out.println(threadPoolExecutor.getPoolSize());
+				//e.printStackTrace();
+				threadPoolExecutor.setCorePoolSize(threadPoolExecutor.getPoolSize() - 1);
 				results.add(threadPoolExecutor.submit(new Probe()));
-				// System.exit(1);
 			}
 		}
 	}
