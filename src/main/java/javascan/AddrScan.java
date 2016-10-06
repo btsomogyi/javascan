@@ -126,28 +126,10 @@ public class AddrScan implements Scannable {
 		int count = 0;
 		ResultValue result = null;
 		while (!results.isEmpty()) {
-
 				result = results.remove(0).get();
 				String output = String.format("%s\t\t%d\t%s", this.target.getHostAddress(), this.portLow + count++,
 						result);
 				System.out.println(output);
 		}
 	}
-
-	public static void main(String[] args) {
-		AddrScan.init();
-
-		AddrScan first;
-		try {
-			first = new AddrScan(InetAddress.getByName("www.google.com"), 1, 1000);
-			first.scan();
-			first.output();
-		} catch (UnknownHostException | IllegalArgumentException | InterruptedException | ExecutionException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		AddrScan.shutdown();
-	}
-
-}
+} // end class AddrScan

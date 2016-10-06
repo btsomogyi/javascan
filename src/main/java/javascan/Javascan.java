@@ -6,12 +6,11 @@ package javascan;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-//import org.apache.commons.cli.*;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.net.util.SubnetUtils;
 
 /**
- * @author bluethunder
+ * @author Blue Thunder Somogyi
  *
  */
 public class Javascan {
@@ -19,10 +18,10 @@ public class Javascan {
 	/**
 	 * Display usage and exit
 	 * 
-	 * @param cmd
 	 */
-	private static void help(String cmd) {
+	private static void help() {
 		// This prints out some help
+		String cmd = Javascan.class.getName();
 		System.out.println("usage: " + cmd + " <<host | ip | cidr>[:port[-port]]>...");
 		System.out.println();
 		System.out.println("\t" + cmd + " hostname");
@@ -35,8 +34,8 @@ public class Javascan {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if (args.length < 2) {
-			help(args[0]);
+		if (args.length < 1) {
+			help();
 		}
 
 		try {
@@ -48,14 +47,23 @@ public class Javascan {
 
 			// Load target arguments into Scannable ArrayList
 			TargetSpec t;
-			for (int x = 1; x < args.length; x++) {
+			for (int x = 0; x < args.length; x++) {
+				// For each input parameter, parse and store as TargetSpec
+				// Print Exception on invalid input parameter and continue
+				// with remaining input parameters.
 				try {
 					t = new TargetSpec(args[x]);
 				} catch (IllegalArgumentException | UnknownHostException e) {
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 					continue;
 				}
 
+				// For each TargetSpec, examine target type (InetAddress or
+				// SubnetUtils) and create
+				// appropriate Scannable instance in Targets ArrayList. Print
+				// Exception on target
+				// value validation error and continue with remaining input
+				// parameters.
 				try {
 					if (t.Target instanceof InetAddress) {
 						Targets.add(new AddrScan(t.getInetTarget(), t.portLow, t.portHigh));
@@ -67,7 +75,7 @@ public class Javascan {
 						throw e;
 					}
 				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 					continue;
 				}
 			}
@@ -77,22 +85,22 @@ public class Javascan {
 				try {
 					s.scan();
 				} catch (IllegalArgumentException | UnknownHostException e) {
-
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 				}
 			}
 
 			// Output results from Scannable ArrayList
+			System.out.println("target\t\t\tport\tresult");
 			for (Scannable s : Targets) {
 				try {
 					s.output();
 				} catch (IllegalArgumentException e) {
-
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 				}
 			}
 
 		} catch (Exception e) {
+			// Abort on uncaught exception
 			e.printStackTrace();
 		} finally {
 			// Tear down thread pool
@@ -144,10 +152,15 @@ class TargetSpec {
 
 		// Parse hostname/address/subnet - throw exception on parse failure or
 		// hostname unknown
-		if (targetParts[0].contains("/")) {
-			this.Target = new SubnetUtils(targetParts[0]);
-		} else {
-			this.Target = InetAddress.getByName(targetParts[0]);
+		try {
+			if (targetParts[0].contains("/")) {
+				this.Target = new SubnetUtils(targetParts[0]);
+			} else {
+				this.Target = InetAddress.getByName(targetParts[0]);
+			}
+		} catch (UnknownHostException e) {
+			UnknownHostException f = new UnknownHostException("Unresolvable target: " + targetParts[0]);
+			throw f;
 		}
 	} // End TargetSpec constructor
 
@@ -160,33 +173,3 @@ class TargetSpec {
 	}
 
 } // End class TargetSpec
-
-/*
- * class Cli { private String[] args = null; private Options options = new
- * Options();
- * 
- * public Cli(String[] args) {
- * 
- * this.args = args;
- * 
- * options.addOption("h", "help", false, "show help."); options.addOption("v",
- * "var", true, "Here you can set parameter .");
- * 
- * }
- * 
- * public void parse() { CommandLineParser parser = new BasicParser();
- * 
- * CommandLine cmd = null; try { cmd = parser.parse(options, args);
- * 
- * if (cmd.hasOption("h")) help();
- * 
- * if (cmd.hasOption("v")) { // Whatever you want to do with the setting goes
- * here } else { help(); }
- * 
- * } catch (ParseException e) { help(); } }
- * 
- * private void help() { // This prints out some help HelpFormatter formater =
- * new HelpFormatter();
- * 
- * formater.printHelp("Main", options); System.exit(0); } }
- */
