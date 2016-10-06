@@ -24,15 +24,15 @@ usage: Javascan <<host | ip | cidr>[@port[-port]]>...
     Javascan a.b.c.d@10
     Javascan a.b.c.d/x@10-100
 ```
-hostname is any DNS resolvable host record
-ip is any IP address (IPv4 | IPv6)
-cidr is standard subnet in dot-slash format
+-hostname is any DNS resolvable host record
+-ip is any IP address (IPv4 | IPv6)
+-cidr is standard subnet in dot-slash format
 
 One or more complete target specifiers (target@port-port) may be provided
 
 ### Design
 
-Javascan uses a standard Java idiom to express this basic functionality.  Design goals were:
+Javascan uses a straightforward design to express this basic scanner functionality.  Design goals were:
 - Implement concurrency with thread reuse
 - Minimize object memory consumption in-flight (release objects as soon as payload is output)
 - Capture output order using Future<> objects so output can proceed in parallel to scanning process
