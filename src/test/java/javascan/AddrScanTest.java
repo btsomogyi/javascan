@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("unused")
@@ -47,7 +48,6 @@ public class AddrScanTest {
 			AddrScan.validatePorts(1, 1);
 			AddrScan.validatePorts(65535, 65535);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 	}
@@ -107,7 +107,6 @@ public class AddrScanTest {
 				fail("test.results not initialized");
 			}
 		} catch (UnknownHostException | IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			// e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -115,12 +114,11 @@ public class AddrScanTest {
 	
 	@Test
 	public void testConstructorInvalidHostname() {
-		// Valid constructor
+		// Invalid constructor
 		try {
 			AddrScan test = new AddrScan(InetAddress.getByName("test.local"), 1, 65000);
 			fail("UnknownHostException expected");
 		} catch (UnknownHostException | IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
@@ -132,7 +130,6 @@ public class AddrScanTest {
 			AddrScan test = new AddrScan(InetAddress.getByName("localhost"), -1, 65000);
 			fail("IllegalArgumentException expected");
 		} catch (UnknownHostException | IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
@@ -144,27 +141,26 @@ public class AddrScanTest {
 			AddrScan test = new AddrScan(InetAddress.getByName("localhost"), 100, 50);
 			fail("IllegalArgumentException expected");
 		} catch (UnknownHostException | IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
 	
 	@Test
 	public void testConstructorExcessiveHighport() {
-		// Valid constructor
+		// Invalid constructor
 		try {
 			AddrScan test = new AddrScan(InetAddress.getByName("localhost"), 1, 500000);
 			fail("IllegalArgumentException expected");
 		} catch (UnknownHostException | IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
 	
 	// Test permutations of results against well known live hosts
 	@Test
+	@Ignore
 	public void testAddrScanGoogle() {
-		// Valid constructor
+		// Valid scan test
 		ArrayList<Future<ResultValue>> testresults;
 		try {
 			AddrScan test1 = new AddrScan(InetAddress.getByName("www.google.com"), 79, 80);
@@ -183,14 +179,7 @@ public class AddrScanTest {
 				fail("www.google.com:80 expected CLOSED, got " + testresults.get(0).get());
 			} 
 		} catch (UnknownHostException | IllegalArgumentException | ExecutionException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 	}
-	
-	@Test
-	public void test() {
-		// fail("Not yet implemented"); // TODO
-	}
-
 }

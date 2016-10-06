@@ -25,14 +25,13 @@ public class ProbeTest {
 			Probe.validatePort(100);
 			Probe.validatePort(65535);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 	}
 	
 	@Test
 	public void testValidatePortInvalid() {
-		// Valid port values
+		// Invalid port values
 		try {
 			Probe.validatePort(0);
 			fail("IllegalArgumentException expected: [port: 0]");
@@ -56,38 +55,31 @@ public class ProbeTest {
 		try {
 			Probe test = new Probe(Target, 1);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 	}
 	
 	@Test
 	public void testConstructorZeroPort() {
-		// Valid constructor
+		// Invalid constructor 
 		try {
 			Probe test = new Probe(Target, 0);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
 	
 	@Test
 	public void testConstructorExcessiveHighport() {
-		// Valid constructor
+		// Invalid constructor
 		try {
 			Probe test = new Probe(Target, 65999);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
 	
-	@Test
-	public void test() {
-		// fail("Not yet implemented"); // TODO
-	}
 
 }

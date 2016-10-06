@@ -51,7 +51,6 @@ public class JavascanTest {
 						"] [portHigh: " + target.portHigh + "]");
 			}
 		} catch (IllegalArgumentException | UnknownHostException e) {
-			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
 	}
@@ -64,14 +63,12 @@ public class JavascanTest {
 			target = new TargetSpec("10.10.40.10:100:200");
 			fail("IllegalArgumentException expected: [ports: 100:200]");
 		} catch (IllegalArgumentException | UnknownHostException e) {
-			// TODO Auto-generated catch block
 		}
 		
 		try {
 			target = new TargetSpec("10.10.abc.10:10000");
 			fail("UnknownHostException expected: [host: 10.10.abc.10]");
 		} catch (IllegalArgumentException | UnknownHostException e) {
-			// TODO Auto-generated catch block
 		}
 
 	}
