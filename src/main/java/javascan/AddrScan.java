@@ -14,7 +14,8 @@ import org.apache.commons.lang3.Validate;
 public class AddrScan implements Scannable {
 
 	// Constants
-	private static final int MAXTHREADS = Integer.MAX_VALUE;
+	//private static final int MAXTHREADS = Integer.MAX_VALUE;
+	private static final int MAXTHREADS = 1024;
 	private static final long THREAD_IDLE_SEC = 5;
 
 	// Statics
