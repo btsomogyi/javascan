@@ -23,10 +23,12 @@ usage: Javascan <<host | ip | cidr>[@port[-port]]>...
     Javascan hostname
     Javascan a.b.c.d@10
     Javascan a.b.c.d/x@10-100
+
 ```
--hostname is any DNS resolvable host record
--ip is any IP address (IPv4 | IPv6)
--cidr is standard subnet in dot-slash format
+
+- hostname is any DNS resolvable host record
+- ip is any IP address (IPv4 | IPv6)
+- cidr is standard subnet in dot-slash format
 
 One or more complete target specifiers (target@port-port) may be provided
 
