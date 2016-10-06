@@ -18,6 +18,39 @@ public class ProbeTest {
 	}
 	
 	@Test
+	public void testValidatePortValid() {
+		// Valid port values
+		try {
+			Probe.validatePort(1);
+			Probe.validatePort(100);
+			Probe.validatePort(65535);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testValidatePortInvalid() {
+		// Valid port values
+		try {
+			Probe.validatePort(0);
+			fail("IllegalArgumentException expected: [port: 0]");
+		} catch (IllegalArgumentException e) {
+		}
+		try {
+			Probe.validatePort(65536);
+			fail("IllegalArgumentException expected: [port: 65536]");
+		} catch (IllegalArgumentException e) {
+		}
+		try {
+			Probe.validatePort(-100);
+			fail("IllegalArgumentException expected: [port: -100]");
+		} catch (IllegalArgumentException e) {
+		}
+	}
+	
+	@Test
 	public void testConstructorValid() {
 		// Valid constructor
 		try {

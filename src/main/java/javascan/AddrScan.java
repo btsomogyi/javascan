@@ -9,24 +9,24 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.Validate;
 
 public class AddrScan implements Scannable {
 
 	// Constants
 	private static final int MAXTHREADS = Integer.MAX_VALUE;
 	private static final long THREAD_IDLE_SEC = 5;
-	static final int MAXPORT = 65535;
 
 	// Statics
 	private static ThreadPoolExecutor threadPoolExecutor;
 
 	// Class Fields
-	private InetAddress Target;
-	private int portlow;
-	private int porthigh;
+	private InetAddress target;
+	private int portLow;
+	private int portHigh;
 	ArrayList<Future<ResultValue>> results;
 
-	// Static Initialization
+	// Static Field Initialization
 	public static void init(int throttle) {
 		int max;
 
@@ -36,7 +36,6 @@ public class AddrScan implements Scannable {
 			max = throttle;
 		}
 
-		// System.out.println("throttle: " + throttle + " max: " + max);
 		threadPoolExecutor = new ThreadPoolExecutor(max, max, THREAD_IDLE_SEC, TimeUnit.SECONDS,
 				new LinkedBlockingQueue<Runnable>());
 	}
@@ -52,46 +51,60 @@ public class AddrScan implements Scannable {
 			threadPoolExecutor.shutdown();
 	}
 
-	// Constructor
+	// Constructors
 	public AddrScan() {
 		results = new ArrayList<Future<ResultValue>>();
 	}
 
-	public AddrScan(InetAddress Target, int low, int high) throws IllegalArgumentException {
+	public AddrScan(InetAddress Target, int low, int high) throws IllegalArgumentException, NullPointerException  {
+		Validate.notNull(Target, "InetAddress Target cannot be null");
+		this.target = Target;
 		results = new ArrayList<Future<ResultValue>>();
-		this.Target = Target;
-		if (low < 1 || low > MAXPORT || high < low || high > MAXPORT) {
-			IllegalArgumentException e = new IllegalArgumentException(
-					"Invalid port arguments: [low: " + low + "] [high: " + high + "]");
-			throw e;
-		} else {
-			this.portlow = low;
-			this.porthigh = high;
-		}
+
+		validatePorts(low, high);
+		this.portLow = low;
+		this.portHigh = high;
+
 	}
 
 	// Getters
-	public InetAddress GetTarget() {
-		return this.Target;
+	public InetAddress getTarget() {
+		return this.target;
 	}
 
-	public int GetPortlow() {
-		return this.portlow;
+	public int getPortlow() {
+		return this.portLow;
 	}
 
-	public int GetPorthigh() {
-		return this.porthigh;
+	public int getPorthigh() {
+		return this.portHigh;
+	}
+
+	// AddrScan.results getter - package access only for test validation
+	ArrayList<Future<ResultValue>> getResults() {
+		return this.results;
+	}
+
+	// Validate port values
+	static void validatePorts(int low, int high) throws IllegalArgumentException {
+		if (Probe.validatePort(high) < Probe.validatePort(low)) {
+			IllegalArgumentException e = new IllegalArgumentException(
+					"Invalid port arguments: [low: " + low + "] [high: " + high + "]");
+			throw e;
+		}
+
 	}
 
 	// Scan target ports
 	public void scan() throws UnknownHostException {
 		// TODO Auto-generated method stub
 
-		for (int x = this.portlow; x <= this.porthigh; x++) {
+		for (int x = this.portLow; x <= this.portHigh; x++) {
 			try {
-				results.add(threadPoolExecutor.submit(new Probe(this.Target, x)));
-			} catch ( NullPointerException e) {
-				NullPointerException e2 = new NullPointerException("AddrScan results ArrayList not initialized: invoke AddrScan.init() prior to scan()");
+				results.add(threadPoolExecutor.submit(new Probe(this.target, x)));
+			} catch (NullPointerException e) {
+				NullPointerException e2 = new NullPointerException(
+						"AddrScan results ArrayList not initialized: invoke AddrScan.init() prior to scan()");
 				throw e2;
 			} catch (RejectedExecutionException e) {
 				System.out.println(threadPoolExecutor.getPoolSize());
@@ -107,25 +120,18 @@ public class AddrScan implements Scannable {
 	}
 
 	@Override
-	public void output() {
+	public void output() throws InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
 
 		int count = 0;
 		ResultValue result = null;
 		while (!results.isEmpty()) {
 
-			try {
 				result = results.remove(0).get();
-				String output = String.format("%s\t\t%d\t%s", this.Target.getHostAddress(), this.portlow + count++,
+				String output = String.format("%s\t\t%d\t%s", this.target.getHostAddress(), this.portLow + count++,
 						result);
 				System.out.println(output);
-			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 		}
-
 	}
 
 	public static void main(String[] args) {
@@ -136,7 +142,7 @@ public class AddrScan implements Scannable {
 			first = new AddrScan(InetAddress.getByName("www.google.com"), 1, 1000);
 			first.scan();
 			first.output();
-		} catch (UnknownHostException | IllegalArgumentException e1) {
+		} catch (UnknownHostException | IllegalArgumentException | InterruptedException | ExecutionException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}

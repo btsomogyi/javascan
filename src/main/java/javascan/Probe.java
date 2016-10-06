@@ -9,12 +9,13 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
-//import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.Validate;
 
 public class Probe implements Callable<ResultValue> {
 
 	// Constants
 	private static final int SOCKET_TIMEOUT_SEC = 1;
+	static final int MAXPORT = 65535;
 
 	// Fields
 	private InetAddress Target;
@@ -24,35 +25,37 @@ public class Probe implements Callable<ResultValue> {
 	public Probe() {
 	}
 
-	public Probe(InetAddress target, int port) throws IllegalArgumentException {
-		this.Target = target;
-		if (port < 1 || port > AddrScan.MAXPORT) {
-			IllegalArgumentException e = new IllegalArgumentException("Invalid port argument: [port: " + port + "]");
-			throw e;
-		} else {
-			this.port = port;
-		}
+	public Probe(InetAddress Target, int port) throws IllegalArgumentException, NullPointerException  {
+		Validate.notNull(Target, "InetAddress cannot be null");
+		this.Target = Target;
+		this.port = validatePort(port);
 	}
 
-	// Initialize object
-	public Probe SetTarget(InetAddress target, int port) throws IllegalArgumentException {
-		this.Target = target;
-		if (port < 1 || port > AddrScan.MAXPORT) {
-			IllegalArgumentException e = new IllegalArgumentException("Invalid port argument: [port: " + port + "]");
-			throw e;
-		} else {
-			this.port = port;
-		}
+	// Initialize existing object
+	public Probe setTarget(InetAddress Target, int port) throws IllegalArgumentException, NullPointerException  {
+		Validate.notNull(Target, "InetAddress Target cannot be null");
+		this.Target = Target;
+		this.port = validatePort(port);
 		return this;
 	}
 
 	// Getters
-	public InetAddress GetTarget() {
+	public InetAddress getTarget() {
 		return this.Target;
 	}
 
-	public int GetPort() {
+	public int getPort() {
 		return this.port;
+	}
+
+	// Validate port value
+	static int validatePort(int port) throws IllegalArgumentException {
+		if (port < 1 || port > MAXPORT) {
+			IllegalArgumentException e = new IllegalArgumentException("Invalid port argument: [port: " + port + "]");
+			throw e;
+		} else {
+			return port;
+		}
 	}
 
 	// Runnable
@@ -73,7 +76,7 @@ public class Probe implements Callable<ResultValue> {
 			// System.err.println(e);
 			ProbeResult = ResultValue.CLOSED;
 		} catch (UnknownHostException e) {
-			//System.err.println(e);
+			// System.err.println(e);
 			ProbeResult = ResultValue.ERROR;
 		} catch (SocketTimeoutException e) {
 			// System.err.println(e);
